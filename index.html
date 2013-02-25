@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<!--
+		
+		Dumpies 2
+
+		Created by Allice, Eddie, Ngoc, John
+
+		Special thanks to Batiste Bieler and contributors for Sprite.js and more
+		
+		All rights and permissions reserved to Che Chan.
+
+		-->
+		<title>
+			Dumpies 2
+		</title>
+		<meta name="viewport" content="user-scalable=no, width=device-width">
+		
+		<script src="sprite.js"></script>
+		<script src="lib/collision.js"></script>
+		<script type="text/javascript">
+		window.onload = function() {
+		
+			sjs.debug = true;
+		
+			var scene = sjs.Scene({w:320, h:416});
+			var layer = scene.Layer("game_layer");
+			scene.loadImages([
+				'img/test/star.png',
+				'img/Bunnyyyy.png',
+				'img/BIG_BUNNY.png',
+				'img/BunnyVer1.000.png',
+				'img/cat.png',
+				'img/giraffe.png',
+				'img/turtle.png',
+				'img/Bunny.png',
+				'img/AllyIcon01.png',
+				'img/old_master.png',
+				'img/old_master_big.png',
+				],
+				function() {
+					engine = new Engine(scene, layer);
+					ticker = scene.Ticker(function() {
+						engine.run();
+					});
+					engine.setTicker(ticker);
+					ticker.run();
+				});
+			};
+			
+			function Engine(scene, layer) {
+				var that = this;
+				
+				this.scene = scene;
+				this.layer = layer;
+				this.ticker = null;
+				this.inputs = scene.Input();
+				this.setTicker = function(ticker) {
+					this.ticker = ticker;
+				}
+				this.spriteList = new Array();
+				this.gravity = 0.25;
+				
+				//////////////////////////////////////////////////////////////////
+				// HOW TO ADD A SPRITE                                          //
+				//////////////////////////////////////////////////////////////////
+				addSprite = function(type, img, x, y) {
+					var sprite = that.scene.Sprite(img, {
+						"layer": that.layer,
+            "x": x,
+            "y": y,
+            "w": 64,
+            "h": 64,
+						"isMoving": false
+					});
+					
+					sprite.move = function() {
+						if (this.isMoving) {
+							this.move(this.vx, this.vy);alert(this.isMoving);
+							
+							this.isMoving = false;
+						}
+						else {
+							this.vx = this.vy = 0;
+						
+							if (type == 'player') {
+								if (that.inputs.keyboard.left){
+									this.vx = 2;
+								}
+								if (that.inputs.keyboard.right){
+									this.vx = 2;
+								}
+								if (that.inputs.keyboard.up){
+									this.vy = 2;
+								}
+								if (that.inputs.keyboard.down){
+									this.vy = 2;
+								}
+							}
+							else if (type == 'npc') {
+
+							}
+							else {
+								
+							}
+							
+							if (this.vx || this.vy) {
+								var x = this.x + (this.vx ? this.vx : 0);
+								var y = this.y + (this.vy ? this.vy : 0);
+								if (0 <= x && x < that.scene.w && 0 <= y && y < that.scene.h) {// && !map.hitTest(x, y) && !mapSpriteTest(x, y)) {
+									this.isMoving = true;
+								}
+							}
+						}
+					};
+					
+					that.spriteList.push(sprite);
+				};
+				
+				_update = function(sprite) {
+					sprite.move();
+				};
+				
+				//////////////////////////////////////////////////////////////////
+				// HOW TO HANDLE MOUSE CLICK                                    //
+				//////////////////////////////////////////////////////////////////
+				/*scene.dom.onclick = function(e) {
+					if(sjs.collision.isPointInImage(
+						e.clientX - s.x - scene.dom.offsetLeft,
+						e.clientY - s.y - scene.dom.offsetTop,
+						s.w,
+						s.h,
+						s.img)
+					) {
+						alert("star touched");
+					}
+					
+					if(sjs.collision.isPointInImage(
+						e.clientX - that.player.x - scene.dom.offsetLeft,
+						e.clientY - that.player.y - scene.dom.offsetTop,
+						that.player.w,
+						that.player.h,
+						that.player.img)
+					) {
+						that.player.selected = true;
+						that.player2.selected = false;
+					}
+					
+					if(sjs.collision.isPointInImage(
+						e.clientX - that.player2.x - scene.dom.offsetLeft,
+						e.clientY - that.player2.y - scene.dom.offsetTop,
+						that.player2.w,
+						that.player2.h,
+						that.player2.img)
+					) {
+						that.player.selected = false;
+						that.player2.selected = true;
+					}
+				};*/
+				
+				addSprite('player', 'img/Bunny.png', 0, 0);
+				
+				//////////////////////////////////////////////////////////////////
+				//Create run method which will be called each time the          //
+				//game loop runs                                                //
+				//////////////////////////////////////////////////////////////////
+				this.run = function() {
+					//Update and Paint all images
+					for (var i in that.spriteList) {
+						_update(that.spriteList[i]);
+						
+						that.spriteList[i].update();
+					}
+				}
+			}
+	</script>
+	</head>
+	<body>
+		Click on the bunny and press wasd or arrows
+		<span id="debug"></span>
+	</body>
+</html>
